@@ -146,6 +146,9 @@ class MyWindow(QMainWindow):
         alw = 25000 - zfw
         #взлетная масса
         tow = zfw + self.pld + QTO
+        if tow > 25000:
+            QMessageBox.critical(self, "Ошибка", "Взлетная масса превышает допустимый лимит (25000 кг)")
+            return
         #посадочная масса
         ldgw = tow - Qtrip
 
@@ -184,17 +187,28 @@ class MyWindow(QMainWindow):
 
     def subtract_step(self, step_num):
         index = step_num - 1
-        if self.steps[index] > 0:
-            self.steps[index] -= 100
+        if self.steps[index] > 99:
+            remainder = self.steps[index] % 100  # вычисляем остаток
+            if remainder > 0:
+                self.steps[index] -= remainder  # отнимаем остаток
+            else:
+                self.steps[index] -= 100
             self.step_labels[index].setText(str(self.steps[index]))
             self.calculate()
 
     def add_step(self, step_num):
         index = step_num - 1
         new_step_value = self.steps[index] + 100
+        remainder = new_step_value % 100  # вычисляем остаток
+        print (remainder)
         if sum(self.steps) + 100 <= self.pld:
             self.steps[index] = new_step_value
             self.step_labels[index].setText(str(new_step_value))
+            self.calculate()
+        else:
+            remainder = self.pld - sum(self.steps)
+            self.steps[index] += remainder
+            self.step_labels[index].setText(str(self.steps[index]))
             self.calculate()
 
         self.draw_chart()

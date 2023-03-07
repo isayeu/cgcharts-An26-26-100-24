@@ -1,5 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QIntValidator
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -49,24 +49,30 @@ class Ui_MainWindow(object):
         self.CrewComboBox.setGeometry(QtCore.QRect(620, 140, 113, 31))
         self.CrewComboBox.setObjectName("CrewComboBox")
 
+        CargoValidator = QIntValidator(0, 6300)
         self.CargoLineEdit = QtWidgets.QLineEdit(self.centralwidget)
+        self.CargoLineEdit.setValidator(CargoValidator)
         self.CargoLineEdit.setGeometry(QtCore.QRect(740, 140, 113, 31))
         self.CargoLineEdit.setObjectName("CargoLineEdit")
 
+        TO_Fuel_Validator = QIntValidator(0, 4900)
         self.TOFuelLineEdit = QtWidgets.QLineEdit(self.centralwidget)
+        self.TOFuelLineEdit.setValidator(TO_Fuel_Validator)
         self.TOFuelLineEdit.setGeometry(QtCore.QRect(620, 180, 113, 31))
         self.TOFuelLineEdit.setObjectName("TOFuelLineEdit")
 
+        Trip_Fuel_Validator = QIntValidator()
         self.TripFuelLineEdit = QtWidgets.QLineEdit(self.centralwidget)
+        self.TripFuelLineEdit.setValidator(Trip_Fuel_Validator)
         self.TripFuelLineEdit.setGeometry(QtCore.QRect(740, 180, 113, 31))
         self.TripFuelLineEdit.setObjectName("TripFuelLineEdit")
 
         self.WeightCalcPB = QtWidgets.QPushButton(self.centralwidget)
-        self.WeightCalcPB.setGeometry(QtCore.QRect(740, 220, 113, 31))
+        self.WeightCalcPB.setGeometry(QtCore.QRect(740, 310, 113, 31))
         self.WeightCalcPB.setObjectName("WeightCalcPB")
 
         self.weight = QtWidgets.QLabel(self.centralwidget)
-        self.weight.setGeometry(QtCore.QRect(740, 260, 113, 100))
+        self.weight.setGeometry(QtCore.QRect(740, 350, 113, 100))
         self.weight.setAlignment(QtCore.Qt.AlignCenter)
         self.weight.setObjectName("weight")
 

@@ -187,7 +187,7 @@ class MyWindow(QMainWindow):
 
     def subtract_step(self, step_num):
         index = step_num - 1
-        if self.steps[index] > 99:
+        if self.steps[index] > 0:
             remainder = self.steps[index] % 100  # вычисляем остаток
             if remainder > 0:
                 self.steps[index] -= remainder  # отнимаем остаток

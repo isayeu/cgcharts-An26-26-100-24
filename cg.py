@@ -187,7 +187,7 @@ class MyWindow(QMainWindow):
 
     def subtract_step(self, step_num):
         index = step_num - 1
-        if self.steps[index] > 99:
+        if self.steps[index] > 0:
             remainder = self.steps[index] % 100  # вычисляем остаток
             if remainder > 0:
                 self.steps[index] -= remainder  # отнимаем остаток
@@ -200,7 +200,6 @@ class MyWindow(QMainWindow):
         index = step_num - 1
         new_step_value = self.steps[index] + 100
         remainder = new_step_value % 100  # вычисляем остаток
-        print (remainder)
         if sum(self.steps) + 100 <= self.pld:
             self.steps[index] = new_step_value
             self.step_labels[index].setText(str(new_step_value))
@@ -234,6 +233,7 @@ class MyWindow(QMainWindow):
         heights = [1140, 1270, 1410, 1540, 1680, 1810, 1940, 2080, 2220, 2360, 2480, 2620, 2760, 3100]
         for i in range(13):
             l -= (self.steps[i] / 100) * factors[i]
+            print (l)
             painter.drawLine(int(l), heights[i], int(l), heights[i+1])
 
         painter.end()

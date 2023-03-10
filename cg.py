@@ -249,7 +249,7 @@ class MyWindow(QMainWindow):
         self.ui.cgchartLable.setScaledContents(True)
         self.ui.cgchartLable.setObjectName("self.ui.cgchartLable")
 
-        # рассчет взлетной и посаддочной центровок
+        # рассчет взлетной и посаддочной центровок ----- НИХЕРА НЕ ПОЛУЧИЛОСЬ ;(
         print (self.last_x)
         if self.last_x <= 1796: # если менее 30% удлиннение влево, иначе вправо
             length_x_to_cg = 596 + (450 * ((3115 - y_tow) / 285)) #Длинна оси Х по массе для взлетной центровки

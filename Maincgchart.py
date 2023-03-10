@@ -72,7 +72,7 @@ class Ui_MainWindow(object):
         self.WeightCalcPB.setObjectName("WeightCalcPB")
 
         self.weight = QtWidgets.QLabel(self.centralwidget)
-        self.weight.setGeometry(QtCore.QRect(740, 350, 113, 100))
+        self.weight.setGeometry(QtCore.QRect(740, 350, 113, 150))
         self.weight.setAlignment(QtCore.Qt.AlignCenter)
         self.weight.setObjectName("weight")
 

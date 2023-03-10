@@ -117,7 +117,7 @@ class MyWindow(QMainWindow):
         emptyweight = 0
         creweit = 0
         zfw = 0
-        alw = 0
+        self.alw = 0
         self.pld = 0
         QTO = 0
         Qtrip = 0
@@ -143,16 +143,14 @@ class MyWindow(QMainWindow):
         #zero fuel weight
         zfw = self.creweight + emptyweight
         #cвободная загрузка
-        alw = 25000 - zfw
+        self.alw = 25000 - zfw
         #взлетная масса
-        tow = zfw + self.pld + QTO
-        if tow > 25000:
+        self.tow = zfw + self.pld + QTO
+        if self.tow > 25000:
             QMessageBox.critical(self, "Ошибка", "Взлетная масса превышает допустимый лимит (25000 кг)")
             return
         #посадочная масса
-        ldgw = tow - Qtrip
-
-        self.ui.weight.setText("Cвободная\nзагрузка: {}\nВзлетная\nмасса: {}\nПосадочная\nмасса: {}".format(alw, tow, ldgw))
+        self.ldgw = self.tow - Qtrip
 
     #вычисляем положение массы пустого ВС для рисования
         self.wstart = int(810 - (((emptyweight - 15000) * 2.5) / 10) )
@@ -200,7 +198,6 @@ class MyWindow(QMainWindow):
         index = step_num - 1
         new_step_value = self.steps[index] + 100
         remainder = new_step_value % 100  # вычисляем остаток
-        print (remainder)
         if sum(self.steps) + 100 <= self.pld:
             self.steps[index] = new_step_value
             self.step_labels[index].setText(str(new_step_value))
@@ -228,19 +225,43 @@ class MyWindow(QMainWindow):
         painter.drawLine(self.GridCrew, 1140, self.GridCrew - self.cabincrew, 1140)
 
 
+        # TOW
+        painter.setPen(QPen(Qt.blue, 10))
+        y_tow = int(3115 - (self.tow - 15000) * .028)
+        painter.drawLine(840, y_tow, 1990, y_tow)
+        # LDGW
+        painter.setPen(QPen(Qt.green, 10))
+        y_ldgw = int(3115 - (self.ldgw - 15000) * .028)
+        painter.drawLine(840, y_ldgw, 1990, y_ldgw)
         # Загрузка по метрам
+        painter.setPen(QPen(Qt.red, 10))
         l = self.GridCrew - self.cabincrew
         factors = [1300 / 28, 1300 / 39, 1300 / 54, 1300 / 86, 1300 / 225, -1300 / 375, -1300 / 105, -1300 / 60, -1300 / 44, -1300 / 34, -1300 / 27, -1300 / 23, -1300 / 19]
-        heights = [1140, 1270, 1410, 1540, 1680, 1810, 1940, 2080, 2220, 2360, 2480, 2620, 2760, 3100]
+        heights = [1140, 1270, 1410, 1540, 1680, 1810, 1940, 2080, 2220, 2360, 2480, 2620, 2760, 3115]
         for i in range(13):
             l -= (self.steps[i] / 100) * factors[i]
+            self.last_x = l #получаем значение X для рассчета взлетной и посаддочной центровок
             painter.drawLine(int(l), heights[i], int(l), heights[i+1])
 
         painter.end()
-        # устанавливаем pixmap с нарисованной линией в качестве изображения для метки
+        # устанавливаем pixmap с нарисованной линией в качестве изображения для cgchartLable
         self.ui.cgchartLable.setPixmap(self.canvas)
         self.ui.cgchartLable.setScaledContents(True)
         self.ui.cgchartLable.setObjectName("self.ui.cgchartLable")
+
+        # рассчет взлетной и посаддочной центровок
+        print (self.last_x)
+        if self.last_x <= 1796: # если менее 30% удлиннение влево, иначе вправо
+            length_x_to_cg = 596 + (450 * ((3115 - y_tow) / 285)) #Длинна оси Х по массе для взлетной центровки
+            delta_x = 1796 - self.last_x # расстояние от 30% до пересечения
+            delta_to_cg = 15 * (delta_x / length_x_to_cg)
+            to_cg = round((30 - delta_to_cg), 2)
+        else:
+            to_cg = self.tow - 15000
+        print (to_cg)
+        # Выводим текстом данные
+        self.ui.weight.setText("Cвободная\nзагрузка: {}\nВзлетная\nмасса: {}\nПосадочная\nмасса: {}".format(self.alw, self.tow, self.ldgw))
+        #self.ui.weight.setText("Cвободная\nзагрузка: {}\nВзлетная\nмасса: {}\nПосадочная\nмасса: {}\nВзлетная\nцентровка: {}".format(self.alw, self.tow, self.ldgw, to_cg))
 
     def print_chart(self):
         # получаем QPixmap из QLabel

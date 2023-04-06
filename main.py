@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QPainter, QPen, QColor, QBrush
 from PyQt5.QtSql import QSqlDatabase, QSqlQueryModel, QSqlQuery
@@ -6,6 +8,10 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtPrintSupport import QPrinter, QPrintDialog
 from Maincgchart import Ui_MainWindow
 from addacft import Ui_Dialog
+
+
+def lerp(x: float, v: tuple) -> float:
+    return (1.0 - x)*v[0] + x*v[1]
 
 
 class AddAcftWindow(QtWidgets.QDialog):
@@ -181,8 +187,6 @@ class MyWindow(QMainWindow):
     def get_add_step_method(self, step_num):
         return lambda: self.add_step(step_num)
 
-        self.draw_chart()
-
     def subtract_step(self, step_num):
         index = step_num - 1
         if self.steps[index] > 0:
@@ -193,6 +197,8 @@ class MyWindow(QMainWindow):
                 self.steps[index] -= 100
             self.step_labels[index].setText(str(self.steps[index]))
             self.calculate()
+
+        #self.draw_chart()
 
     def add_step(self, step_num):
         index = step_num - 1
@@ -208,7 +214,7 @@ class MyWindow(QMainWindow):
             self.step_labels[index].setText(str(self.steps[index]))
             self.calculate()
 
-        self.draw_chart()
+        #self.draw_chart()
 
     def draw_chart(self):
         # создаём новый pixmap
@@ -225,20 +231,37 @@ class MyWindow(QMainWindow):
         painter.drawLine(self.GridCrew, 1140, self.GridCrew - self.cabincrew, 1140)
 
 
+        WELL_MASS = (25000, 15000)
+        WELL_Y = (2834, 3116)
+        WELL_X_AXIS = 1796
+        WELL_X_CGMIN_TB = (836, 1206)
+        #WELL_X_CGMAX_TB = (?, ?)
+        WELL_PCT_TOP = (0.15, 0.30, 0.33)
+
+        GEAR_CURVE_PCT100 = (4.0, 3.7, 3.35, 2.94, 2.6)
+        GEAR_CURVE_MASS = (15000, 16000, 18000, 21100, 24500)
+
+        WELL_WIDTH_TOP = WELL_X_AXIS - WELL_X_CGMIN_TB[0]
+        WELL_WIDTH_BOTTOM = WELL_X_AXIS - WELL_X_CGMIN_TB[1]
+        WELL_PCT_RANGE = WELL_PCT_TOP[1] - WELL_PCT_TOP[0]
+        WELL_PCT_BOTTOM = (WELL_PCT_TOP[0] / WELL_WIDTH_TOP * WELL_WIDTH_BOTTOM, WELL_PCT_TOP[1])
+        WELL_HEIGHT = WELL_Y[1] - WELL_Y[0]
+        WELL_FACTOR = WELL_HEIGHT / (WELL_MASS[0] - WELL_MASS[1])
+
+        y_tow = int(WELL_Y[1] - (self.tow - WELL_MASS[1]) * WELL_FACTOR)
+        y_ldgw = int(WELL_Y[1] - (self.ldgw - WELL_MASS[1]) * WELL_FACTOR)
         # TOW
         painter.setPen(QPen(Qt.blue, 10))
-        y_tow = int(3115 - (self.tow - 15000) * .028)
         painter.drawLine(840, y_tow, 1990, y_tow)
         # LDGW
         painter.setPen(QPen(Qt.green, 10))
-        y_ldgw = int(3115 - (self.ldgw - 15000) * .028)
         painter.drawLine(840, y_ldgw, 1990, y_ldgw)
         # Загрузка по метрам
         painter.setPen(QPen(Qt.red, 10))
         l = self.GridCrew - self.cabincrew
         factors = [1300 / 28, 1300 / 39, 1300 / 54, 1300 / 86, 1300 / 225, -1300 / 375, -1300 / 105, -1300 / 60, -1300 / 44, -1300 / 34, -1300 / 27, -1300 / 23, -1300 / 19]
         heights = [1140, 1270, 1410, 1540, 1680, 1810, 1940, 2080, 2220, 2360, 2480, 2620, 2760, 3115]
-        for i in range(13):
+        for i in range(len(factors)):
             l -= (self.steps[i] / 100) * factors[i]
             self.last_x = l #получаем значение X для рассчета взлетной и посаддочной центровок
             painter.drawLine(int(l), heights[i], int(l), heights[i+1])
@@ -249,19 +272,18 @@ class MyWindow(QMainWindow):
         self.ui.cgchartLable.setScaledContents(True)
         self.ui.cgchartLable.setObjectName("self.ui.cgchartLable")
 
-        # рассчет взлетной и посаддочной центровок ----- НИХЕРА НЕ ПОЛУЧИЛОСЬ ;(
-        print (self.last_x)
-        if self.last_x <= 1796: # если менее 30% удлиннение влево, иначе вправо
-            length_x_to_cg = 596 + (450 * ((3115 - y_tow) / 285)) #Длинна оси Х по массе для взлетной центровки
-            delta_x = 1796 - self.last_x # расстояние от 30% до пересечения
-            delta_to_cg = 15 * (delta_x / length_x_to_cg)
-            to_cg = round((30 - delta_to_cg), 2)
-        else:
-            to_cg = self.tow - 15000
-        print (to_cg)
+        # рассчет взлетной и посадочной центровок
+        px1 = (self.last_x - WELL_X_AXIS) / WELL_WIDTH_TOP
+        px2 = (self.last_x - WELL_X_AXIS) / WELL_WIDTH_BOTTOM
+        py1 = (y_tow - WELL_Y[0]) / WELL_HEIGHT
+        py2 = (y_ldgw - WELL_Y[0]) / WELL_HEIGHT
+        print("py1: % .3f py2: % .3f px1: % .3f px2: % .3f\tlast_x: %.2f" % (py1, py2, px1, px2, self.last_x))
+        to_cg = lerp(py1, (px1, px2)) * WELL_PCT_RANGE + WELL_PCT_TOP[1]
+        ldgw_cg = lerp(py2, (px1, px2)) * WELL_PCT_RANGE + WELL_PCT_TOP[1]
+        print("\tto_cg: %.2f%% ldgw_cg: %.2f%%" % (to_cg * 100, ldgw_cg * 100))
+
         # Выводим текстом данные
-        self.ui.weight.setText("Cвободная\nзагрузка: {}\nВзлетная\nмасса: {}\nПосадочная\nмасса: {}".format(self.alw, self.tow, self.ldgw))
-        #self.ui.weight.setText("Cвободная\nзагрузка: {}\nВзлетная\nмасса: {}\nПосадочная\nмасса: {}\nВзлетная\nцентровка: {}".format(self.alw, self.tow, self.ldgw, to_cg))
+        self.ui.weight.setText("Cвободная\nзагрузка: {}\nВзлетная\nмасса: {}\nПосадочная\nмасса: {}\nВзлетная\nцентровка: {:.2f}\nПосадочная\nцентровка: {:.2f}".format(self.alw, self.tow, self.ldgw, to_cg * 100, ldgw_cg * 100))
 
     def print_chart(self):
         # получаем QPixmap из QLabel

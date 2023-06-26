@@ -11,6 +11,8 @@ c.execute('''CREATE TABLE acfts
               ACFT_ID TEXT,
               EMPTY_WEIGHT INTEGER,
               EMPTY_CG INTEGER,
+              W_EQUIPMENT INTEGER,
+              CG_EQUIPMENT INTEGER,
               EQUIPED_WEIGHT INTEGER,
               EQUIPED_CG INTEGER)''')
 conn.commit()

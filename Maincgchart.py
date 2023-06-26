@@ -72,7 +72,7 @@ class Ui_MainWindow(object):
         self.WeightCalcPB.setObjectName("WeightCalcPB")
 
         self.weight = QtWidgets.QLabel(self.centralwidget)
-        self.weight.setGeometry(QtCore.QRect(740, 350, 113, 180))
+        self.weight.setGeometry(QtCore.QRect(740, 350, 113, 150))
         self.weight.setAlignment(QtCore.Qt.AlignCenter)
         self.weight.setObjectName("weight")
 
@@ -238,11 +238,12 @@ class Ui_MainWindow(object):
 
         #self.weight.setText(_translate("MainWindow", "G"))
 
+
         self.Del1pushButton.setText(_translate("MainWindow", "-"))
         self.Add1pushButton.setText(_translate("MainWindow", "+"))
-        self.Pl1label.setText(_translate("MainWindow", "0000"))
+        self.Pl1label.setText(_translate("MainWindow", "000"))
         self.Del2pushButton.setText(_translate("MainWindow", "-"))
-        self.Pl2label.setText(_translate("MainWindow", "0000"))
+        self.Pl2label.setText(_translate("MainWindow", "000"))
         self.Add2pushButton.setText(_translate("MainWindow", "+"))
         self.Del3pushButton.setText(_translate("MainWindow", "-"))
         self.Del4pushButton.setText(_translate("MainWindow", "-"))
@@ -266,17 +267,17 @@ class Ui_MainWindow(object):
         self.Add11pushButton.setText(_translate("MainWindow", "+"))
         self.Add12pushButton.setText(_translate("MainWindow", "+"))
         self.Add13pushButton.setText(_translate("MainWindow", "+"))
-        self.Pl3label.setText(_translate("MainWindow", "0000"))
-        self.Pl4label.setText(_translate("MainWindow", "0000"))
-        self.Pl5label.setText(_translate("MainWindow", "0000"))
-        self.Pl6label.setText(_translate("MainWindow", "0000"))
-        self.Pl7label.setText(_translate("MainWindow", "0000"))
-        self.Pl8label.setText(_translate("MainWindow", "0000"))
-        self.Pl9label.setText(_translate("MainWindow", "0000"))
-        self.Pl10label.setText(_translate("MainWindow", "0000"))
-        self.Pl11label.setText(_translate("MainWindow", "0000"))
-        self.Pl12label.setText(_translate("MainWindow", "0000"))
-        self.Pl13label.setText(_translate("MainWindow", "0000"))
+        self.Pl3label.setText(_translate("MainWindow", "000"))
+        self.Pl4label.setText(_translate("MainWindow", "000"))
+        self.Pl5label.setText(_translate("MainWindow", "000"))
+        self.Pl6label.setText(_translate("MainWindow", "000"))
+        self.Pl7label.setText(_translate("MainWindow", "000"))
+        self.Pl8label.setText(_translate("MainWindow", "000"))
+        self.Pl9label.setText(_translate("MainWindow", "000"))
+        self.Pl10label.setText(_translate("MainWindow", "000"))
+        self.Pl11label.setText(_translate("MainWindow", "000"))
+        self.Pl12label.setText(_translate("MainWindow", "000"))
+        self.Pl13label.setText(_translate("MainWindow", "000"))
         self.PrintPushButton.setText(_translate("MainWindow", "Печать"))
 
 
